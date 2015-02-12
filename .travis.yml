@@ -1,6 +1,19 @@
-language: python
-python:
-  - "2.6"
-install: make
-script: echo "Build Passed"
-sudo: false
+language: ruby
+rvm:
+  - 2.1.5
+before_install:
+  - sudo apt-get autoremove sqlite3
+  - sudo apt-add-repository -y ppa:travis-ci/sqlite3
+  - sudo apt-get -y update
+  - sudo apt-cache show sqlite3
+  - sudo apt-get install sqlite3=3.7.15.1-1~travis1
+  - sudo sqlite3 -version
+  - gem update bundler
+install:
+  - bundle install
+  - sudo pip install virtualenv
+  - make
+before_script:
+  - mysql -e 'create database termys;'
+script:
+  - RAILS_ENV=test bundle exec rake db:migrate --trace
